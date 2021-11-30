@@ -131,16 +131,14 @@ class CTUAutodetection:
 
         if not self.analyzer_version_info:
             return None
-        ctu_display_progress_args = ['-Xclang',
-                                     '-analyzer-config',
-                                     '-Xclang',
-                                     'display-ctu-progress=true']
-
         ok = host_check.has_analyzer_config_option(
             self.__analyzer_binary, "display-ctu-progress", self.environ)
         if not ok:
             return None
-        return ctu_display_progress_args
+        return ['-Xclang',
+                                     '-analyzer-config',
+                                     '-Xclang',
+                                     'display-ctu-progress=true']
 
     @property
     def mapping_file_name(self):

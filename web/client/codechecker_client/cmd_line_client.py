@@ -227,22 +227,30 @@ def skip_report_dir_result(
 
     if f_checkers:
         checker_name = report.checker_name
-        if not any([re.match(r'^' + c.replace("*", ".*") + '$',
-                             checker_name, re.IGNORECASE)
-                    for c in f_checkers]):
+        if not any(
+            re.match(
+                r'^' + c.replace("*", ".*") + '$', checker_name, re.IGNORECASE
+            )
+            for c in f_checkers
+        ):
             return True
 
-    if f_file_path:
-        if not any([re.match(r'^' + f.replace("*", ".*") + '$',
-                             report.file.path, re.IGNORECASE)
-                    for f in f_file_path]):
-            return True
+    if f_file_path and not any(
+        re.match(
+            r'^' + f.replace("*", ".*") + '$', report.file.path, re.IGNORECASE
+        )
+        for f in f_file_path
+    ):
+        return True
 
     if 'checker_msg' in args:
         checker_msg = report.message
-        if not any([re.match(r'^' + c.replace("*", ".*") + '$',
-                             checker_msg, re.IGNORECASE)
-                    for c in args.checker_msg]):
+        if not any(
+            re.match(
+                r'^' + c.replace("*", ".*") + '$', checker_msg, re.IGNORECASE
+            )
+            for c in args.checker_msg
+        ):
             return True
 
     return False
@@ -429,7 +437,7 @@ def check_filter_values(args):
             filter_values = []
             for x in filter_str.strip().split(':'):
                 values = [y.strip() for y in x.strip().split(',') if y.strip()]
-                filter_values.append(values if values else None)
+                filter_values.append(values or None)
 
             # pylint: disable=unbalanced-tuple-unpacking
             severities, checkers, file_path, dt_statuses, rw_statuses = \
@@ -469,8 +477,7 @@ def check_filter_values(args):
         (rw_statuses, ttypes.ReviewStatus._NAMES_TO_VALUES,
          'review status')]
 
-    if not all(valid for valid in
-               [validate_filter_values(*x) for x in values_to_check]):
+    if not all(validate_filter_values(*x) for x in values_to_check):
         sys.exit(1)
     return severities, checkers, file_path, dt_statuses, rw_statuses, \
         bug_path_length
@@ -548,20 +555,20 @@ def add_filter_conditions(client, report_filter, args):
     if 'detected_before' in args or 'detected_after' in args:
         detected_at = ttypes.DateInterval()
 
-        if 'detected_before' in args:
-            detected_at.before = int(str_to_timestamp(args.detected_before))
+    if 'detected_before' in args:
+        detected_at.before = int(str_to_timestamp(args.detected_before))
 
-        if 'detected_after' in args:
-            detected_at.after = int(str_to_timestamp(args.detected_after))
+    if 'detected_after' in args:
+        detected_at.after = int(str_to_timestamp(args.detected_after))
 
     if 'fixed_before' in args or 'fixed_after' in args:
         fixed_at = ttypes.DateInterval()
 
-        if 'fixed_before' in args:
-            fixed_at.before = int(str_to_timestamp(args.fixed_before))
+    if 'fixed_before' in args:
+        fixed_at.before = int(str_to_timestamp(args.fixed_before))
 
-        if 'fixed_after' in args:
-            fixed_at.after = int(str_to_timestamp(args.fixed_after))
+    if 'fixed_after' in args:
+        fixed_at.after = int(str_to_timestamp(args.fixed_after))
 
     if detected_at or fixed_at:
         report_filter.date = ttypes.ReportDate(detected=detected_at,
@@ -618,9 +625,7 @@ def handle_list_runs(args):
         # This json is different from the json format printed by the
         # parse command. This json converts the ReportData type report
         # to a json format.
-        results = []
-        for run in runs:
-            results.append({run.name: run})
+        results = [{run.name: run} for run in runs]
         print(CmdLineOutputEncoder().encode(results))
 
     else:  # plaintext, csv
@@ -640,18 +645,22 @@ def handle_list_runs(args):
                                            str(num_of_all_files) + '/' +
                                            str(stat.successful) + ')')
 
-            codechecker_version = run.codeCheckerVersion \
-                if run.codeCheckerVersion else ''
-            description = run.description if run.description else ''
+            codechecker_version = run.codeCheckerVersion or ''
+            description = run.description or ''
 
-            rows.append((run.name,
-                         str(run.resultCount),
-                         ', '.join(analyzer_statistics),
-                         run.runDate,
-                         run.versionTag if run.versionTag else '',
-                         duration,
-                         description,
-                         codechecker_version))
+            rows.append(
+                (
+                    run.name,
+                    str(run.resultCount),
+                    ', '.join(analyzer_statistics),
+                    run.runDate,
+                    run.versionTag or '',
+                    duration,
+                    description,
+                    codechecker_version,
+                )
+            )
+
 
         print(twodim.to_str(args.output_format, header, rows))
 
@@ -799,11 +808,10 @@ def handle_diff_results(args):
         for report_data in reports_data:
             source_lines[report_data.fileId].add(report_data.line)
 
-        lines_in_files_requested = []
-        for file_id in source_lines:
-            lines_in_files_requested.append(
-                ttypes.LinesInFilesRequested(fileId=file_id,
-                                             lines=source_lines[file_id]))
+        lines_in_files_requested = [
+            ttypes.LinesInFilesRequested(fileId=file_id, lines=value)
+            for file_id, value in source_lines.items()
+        ]
 
         source_line_contents = client.getLinesInSourceFileContents(
             lines_in_files_requested, ttypes.Encoding.BASE64)
@@ -844,7 +852,7 @@ def handle_diff_results(args):
         diff_type = get_diff_type(args)
         run_ids, run_names, tag_ids = \
             process_run_args(client, remote_run_names)
-        local_report_hashes = set([r.report_hash for r in report_dir_results])
+        local_report_hashes = {r.report_hash for r in report_dir_results}
         local_report_hashes.update(baseline.get_report_hashes(baseline_files))
 
         if diff_type == ttypes.DiffType.NEW:
@@ -918,7 +926,7 @@ def handle_diff_results(args):
         diff_type = get_diff_type(args)
         run_ids, run_names, tag_ids = \
             process_run_args(client, remote_run_names)
-        local_report_hashes = set([r.report_hash for r in report_dir_results])
+        local_report_hashes = {r.report_hash for r in report_dir_results}
 
         local_report_hashes = local_report_hashes.union(
             baseline.get_report_hashes(baseline_files))
@@ -1012,8 +1020,8 @@ def handle_diff_results(args):
         new_results = [res for res in new_results
                        if res.check_source_code_comments(args.review_status)]
 
-        base_hashes = set([res.report_hash for res in base_results])
-        new_hashes = set([res.report_hash for res in new_results])
+        base_hashes = {res.report_hash for res in base_results}
+        new_hashes = {res.report_hash for res in new_results}
 
         # Add hashes from the baseline files.
         base_hashes.update(baseline.get_report_hashes(baseline_files))
@@ -1089,8 +1097,7 @@ def handle_diff_results(args):
                             file_path.encode('utf-8')).hexdigest(),
                         16) % (10 ** 8)
 
-                    output_file_path = os.path.join(
-                        output_dir, f"{file_name}_ {str(h)}.html")
+                    output_file_path = os.path.join(output_dir, f'{file_name}_ {h}.html')
                     html_builder.create(output_file_path, reports)
 
             if output_format in ['csv', 'rows', 'table']:
@@ -1100,8 +1107,7 @@ def handle_diff_results(args):
                     if report.source_line is None:
                         continue
 
-                    checked_file = f"{report.file.path}:{str(report.line)}:" \
-                                   f"{str(report.column)}"
+                    checked_file = f'{report.file.path}:{report.line}:{report.column}'
                     rows.append((
                         report.severity,
                         checked_file,
@@ -1277,7 +1283,7 @@ def handle_list_result_types(args):
                                            None,
                                            0)
 
-        return dict((res.name, res.count) for res in checkers)
+        return {res.name: res.count for res in checkers}
 
     def checker_count(checker_dict, key):
         return checker_dict.get(key, 0)
@@ -1507,13 +1513,18 @@ def handle_list_run_histories(args):
                                            str(num_of_all_files) + '/' +
                                            str(stat.successful) + ')')
 
-            rows.append((h.time,
-                         h.runName,
-                         h.versionTag if h.versionTag else '',
-                         h.user,
-                         h.codeCheckerVersion if h.codeCheckerVersion else '',
-                         ', '.join(analyzer_statistics),
-                         h.description if h.description else ''))
+            rows.append(
+                (
+                    h.time,
+                    h.runName,
+                    h.versionTag or '',
+                    h.user,
+                    h.codeCheckerVersion or '',
+                    ', '.join(analyzer_statistics),
+                    h.description or '',
+                )
+            )
+
 
         print(twodim.to_str(args.output_format, header, rows))
 
@@ -1562,13 +1573,15 @@ def handle_import(args):
             comment_data_list[bug_hash].append(comment_data)
 
     # Convert Json reviews into ReviewData
-    review_data_list = {}
-    for bug_hash, review in data['reviewData'].items():
-        review_data_list[bug_hash] = ttypes.ReviewData(
+    review_data_list = {
+        bug_hash: ttypes.ReviewData(
             status=review['status'],
             comment=review['comment'],
             author=review['author'],
-            date=review['date'])
+            date=review['date'],
+        )
+        for bug_hash, review in data['reviewData'].items()
+    }
 
     exportData = ttypes.ExportData(comments=comment_data_list,
                                    reviewData=review_data_list)

@@ -34,9 +34,8 @@ def check_intercept(env):
 
         if not res:
             return True
-        else:
-            LOG.debug('Failed to run: "%s"', ' '.join(intercept_cmd))
-            return False
+        LOG.debug('Failed to run: "%s"', ' '.join(intercept_cmd))
+        return False
     except subprocess.CalledProcessError:
         LOG.debug('Failed to run: "%s", process returned non-zero exit code.',
                   ' '.join(intercept_cmd))

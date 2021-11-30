@@ -22,8 +22,7 @@ def get_default_workspace():
     """
     Default workspace in the users home directory.
     """
-    workspace = os.path.join(os.path.expanduser("~"), '.codechecker')
-    return workspace
+    return os.path.join(os.path.expanduser("~"), '.codechecker')
 
 
 def get_password_file():

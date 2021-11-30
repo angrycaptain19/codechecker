@@ -43,8 +43,7 @@ def convert(reports: Iterable[Report]) -> List[str]:
 
     Returns a list of sorted unique report hashes.
     """
-    return sorted(set(
-        r.report_hash for r in reports if r.report_hash is not None))
+    return sorted({r.report_hash for r in reports if r.report_hash is not None})
 
 
 def write(file_path: str, report_hashes: Iterable[str]):

@@ -78,12 +78,8 @@ def __collect_blame_info_for_files(
     zip_iter=map
 ) -> FileBlameInfo:
     """ Collect blame information for the given file paths. """
-    file_blame_info = {}
-    for file_path, blame_info in zip(file_paths,
-                                     zip_iter(__get_blame_info, file_paths)):
-        file_blame_info[file_path] = blame_info
-
-    return file_blame_info
+    return {file_path: blame_info for file_path, blame_info in zip(file_paths,
+                                     zip_iter(__get_blame_info, file_paths))}
 
 
 def assemble_blame_info(
@@ -115,4 +111,4 @@ def assemble_blame_info(
                 os.path.join('blame', f.lstrip('/')),
                 json.dumps(blame_info))
 
-    return any(v for v in file_blame_info.values())
+    return any(file_blame_info.values())

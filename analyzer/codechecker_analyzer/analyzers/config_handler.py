@@ -66,12 +66,11 @@ class AnalyzerConfigHandler(metaclass=ABCMeta):
         """ Get analyzer version information. """
         version = [self.analyzer_binary, '--version']
         try:
-            output = subprocess.check_output(version,
+            return subprocess.check_output(version,
                                              env=env,
                                              universal_newlines=True,
                                              encoding="utf-8",
                                              errors="ignore")
-            return output
         except (subprocess.CalledProcessError, OSError) as oerr:
             LOG.warning("Failed to get analyzer version: %s",
                         ' '.join(version))
@@ -109,7 +108,7 @@ class AnalyzerConfigHandler(metaclass=ABCMeta):
         """
         Generate all applicable name variations from the given checker list.
         """
-        checker_names = (name for name in self.__available_checkers)
+        checker_names = iter(self.__available_checkers)
         reserved_names = []
 
         for name in checker_names:
@@ -171,12 +170,12 @@ class AnalyzerConfigHandler(metaclass=ABCMeta):
             for checker in default_profile_checkers:
                 self.set_checker_enabled(checker)
 
-        # If enable_all is given, almost all checkers should be enabled.
-        disabled_groups = ["alpha.", "debug.", "osx.", "abseil-", "android-",
-                           "darwin-", "objc-", "cppcoreguidelines-",
-                           "fuchsia.", "fuchsia-", "hicpp-", "llvm-",
-                           "llvmlibc-", "google-", "zircon-"]
         if enable_all:
+            # If enable_all is given, almost all checkers should be enabled.
+            disabled_groups = ["alpha.", "debug.", "osx.", "abseil-", "android-",
+                               "darwin-", "objc-", "cppcoreguidelines-",
+                               "fuchsia.", "fuchsia-", "hicpp-", "llvm-",
+                               "llvmlibc-", "google-", "zircon-"]
             for checker_name, _ in checkers:
                 if not any(checker_name.startswith(d_grp) for d_grp in
                            disabled_groups):

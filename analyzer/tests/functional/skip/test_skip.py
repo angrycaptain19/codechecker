@@ -170,7 +170,5 @@ class TestSkip(unittest.TestCase):
 
         # Check that we analyzed all source files which depend on the header
         # file.
-        self.assertTrue(any(["a.cpp" in f
-                             for f in report_dir_files]))
-        self.assertTrue(any(["b.cpp" in f
-                             for f in report_dir_files]))
+        self.assertTrue(any("a.cpp" in f for f in report_dir_files))
+        self.assertTrue(any("b.cpp" in f for f in report_dir_files))

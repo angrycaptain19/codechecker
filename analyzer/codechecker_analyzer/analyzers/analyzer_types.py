@@ -70,11 +70,10 @@ def is_statistics_capable(context):
 
     stat_checkers_pattern = re.compile(r'.+statisticscollector.+')
 
-    for checker_name, _ in checkers:
-        if stat_checkers_pattern.match(checker_name):
-            return True
-
-    return False
+    return any(
+        stat_checkers_pattern.match(checker_name)
+        for checker_name, _ in checkers
+    )
 
 
 def is_z3_capable(context):

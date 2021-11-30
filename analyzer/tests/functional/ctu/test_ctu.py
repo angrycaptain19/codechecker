@@ -242,9 +242,18 @@ class TestCtu(unittest.TestCase):
     def test_ctu_makefile_generation(self):
         """ Test makefile generation in CTU mode. """
 
-        cmd = [self._codechecker_cmd, 'analyze', '-o', self.report_dir,
-               '--analyzers', 'clangsa', '--ctu', '--makefile']
-        cmd.append(self.buildlog)
+        cmd = [
+            self._codechecker_cmd,
+            'analyze',
+            '-o',
+            self.report_dir,
+            '--analyzers',
+            'clangsa',
+            '--ctu',
+            '--makefile',
+            self.buildlog,
+        ]
+
         _, _, result = call_command(cmd, cwd=self.test_dir, env=self.env)
         self.assertEqual(result, 0, "Analyzing failed.")
 

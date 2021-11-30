@@ -42,7 +42,7 @@ class OptionParserTest(unittest.TestCase):
         res = log_parser.parse_options(action)
         print(res)
         self.assertFalse("-fno-merge-const-bfstores" in res.analyzer_options)
-        self.assertTrue('main.cpp' == res.source)
+        self.assertTrue(res.source == 'main.cpp')
         self.assertTrue(BuildAction.COMPILE, res.action_type)
         self.assertEqual(0, len(res.analyzer_options))
 
@@ -62,7 +62,7 @@ class OptionParserTest(unittest.TestCase):
 
         res = log_parser.parse_options(action)
         print(res)
-        self.assertTrue('main.cpp' == res.source)
+        self.assertTrue(res.source == 'main.cpp')
         self.assertEqual(BuildAction.COMPILE, res.action_type)
 
     def test_compile_onefile(self):
@@ -76,7 +76,7 @@ class OptionParserTest(unittest.TestCase):
 
         res = log_parser.parse_options(action)
         print(res)
-        self.assertTrue('main.cpp' == res.source)
+        self.assertTrue(res.source == 'main.cpp')
         self.assertEqual(BuildAction.COMPILE, res.action_type)
 
     def test_preprocess_onefile(self):
@@ -91,7 +91,7 @@ class OptionParserTest(unittest.TestCase):
         res = log_parser.parse_options(action)
         print(res)
 
-        self.assertTrue('main.c' == res.source)
+        self.assertTrue(res.source == 'main.c')
         self.assertEqual(BuildAction.PREPROCESS, res.action_type)
 
     def test_compile_lang(self):
@@ -107,7 +107,7 @@ class OptionParserTest(unittest.TestCase):
         res = log_parser.parse_options(action)
         print(res)
 
-        self.assertTrue('main.c' == res.source)
+        self.assertTrue(res.source == 'main.c')
         self.assertEqual('c', res.lang)
         self.assertEqual(BuildAction.COMPILE, res.action_type)
 
@@ -133,7 +133,7 @@ class OptionParserTest(unittest.TestCase):
         res = log_parser.parse_options(action)
         print(res)
 
-        self.assertTrue('main.c' == res.source)
+        self.assertTrue(res.source == 'main.c')
         self.assertEqual(arch['c'], res.arch)
         self.assertEqual(BuildAction.COMPILE, res.action_type)
 
@@ -237,7 +237,7 @@ class OptionParserTest(unittest.TestCase):
 
         res = log_parser.parse_options(action)
         print(res)
-        self.assertTrue('' == res.source)
+        self.assertTrue(res.source == '')
         self.assertTrue(set(compiler_options) == set(res.analyzer_options))
         self.assertEqual(BuildAction.LINK, res.action_type)
 
@@ -503,8 +503,9 @@ class OptionParserTest(unittest.TestCase):
         self.assertFalse(any([x.endswith('include-fixed')
                               for x in res.compiler_includes['c++']]))
         res = log_parser.parse_options(action, keep_gcc_include_fixed=True)
-        self.assertTrue(any([x.endswith('include-fixed')
-                             for x in res.compiler_includes['c++']]))
+        self.assertTrue(
+            any(x.endswith('include-fixed') for x in res.compiler_includes['c++'])
+        )
 
     def test_compiler_intrin_headers(self):
         """ Include directories with *intrin.h files should be skipped."""
@@ -538,10 +539,7 @@ class OptionParserTest(unittest.TestCase):
         "compilers. This test is gcc/g++ specific.")
     def test_compiler_gcc_intrin_headers(self):
         def contains_intrinsic_headers(dirname):
-            for f in os.listdir(dirname):
-                if f.endswith("intrin.h"):
-                    return True
-            return False
+            return any(f.endswith("intrin.h") for f in os.listdir(dirname))
 
         action = {
             'file': 'main.cpp',

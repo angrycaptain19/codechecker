@@ -22,10 +22,8 @@ def toolchain_in_args(compiler_option):
     """
     for cmp_opt in compiler_option:
         if '--gcc-toolchain' in cmp_opt:
-            tcpath = \
-                re.match(r"^--gcc-toolchain=(?P<tcpath>.*)$",
+            return re.match(r"^--gcc-toolchain=(?P<tcpath>.*)$",
                          cmp_opt).group('tcpath')
-            return tcpath
 
     return None
 

@@ -705,10 +705,11 @@ def __instance_management(args):
 
             # A STOP only stops the server associated with the given workspace
             # and view-port.
-            if 'stop' in args and \
-                not (i['port'] == args.view_port and
-                     os.path.abspath(i['workspace']) ==
-                     os.path.abspath(args.config_directory)):
+            if 'stop' in args and (
+                i['port'] != args.view_port
+                or os.path.abspath(i['workspace'])
+                != os.path.abspath(args.config_directory)
+            ):
                 continue
 
             try:
@@ -733,10 +734,11 @@ def __reload_config(args):
 
         # A RELOAD only reloads the server associated with the given workspace
         # and view-port.
-        if 'reload' in args and \
-                not (i['port'] == args.view_port and
-                     os.path.abspath(i['workspace']) ==
-                     os.path.abspath(args.config_directory)):
+        if 'reload' in args and (
+            i['port'] != args.view_port
+            or os.path.abspath(i['workspace'])
+            != os.path.abspath(args.config_directory)
+        ):
             continue
 
         try:
@@ -841,7 +843,7 @@ def server_init_start(args):
         LOG.debug("No schema upgrade is possible.")
         sys.exit(1)
 
-    force_upgrade = True if 'force_upgrade' in args else False
+    force_upgrade = 'force_upgrade' in args
 
     if db_status == DBStatus.SCHEMA_MISMATCH_OK:
         LOG.debug("Configuration database schema mismatch.")
@@ -934,8 +936,7 @@ def server_init_start(args):
     upgrade_available = {}
     for k, v in prod_statuses.items():
         db_status, _, _, _ = v
-        if db_status == DBStatus.SCHEMA_MISMATCH_OK or \
-                db_status == DBStatus.SCHEMA_MISSING:
+        if db_status in [DBStatus.SCHEMA_MISMATCH_OK, DBStatus.SCHEMA_MISSING]:
             upgrade_available[k] = v
 
     if upgrade_available:
@@ -979,13 +980,12 @@ def server_init_start(args):
                             context,
                             environ)
     except socket.error as err:
-        if err.errno == errno.EADDRINUSE:
-            LOG.error("Server can't be started, maybe the given port number "
-                      "(%s) is already used. Check the connection "
-                      "parameters.", args.view_port)
-            sys.exit(1)
-        else:
+        if err.errno != errno.EADDRINUSE:
             raise
+        LOG.error("Server can't be started, maybe the given port number "
+                  "(%s) is already used. Check the connection "
+                  "parameters.", args.view_port)
+        sys.exit(1)
 
 
 def main(args):

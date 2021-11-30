@@ -101,19 +101,19 @@ def ctu_mapping(clang_version_info):
                   "Can not detect ctu mapping tool.")
         return None, None
 
-    old_mapping_tool_name = 'clang-func-mapping'
-    old_mapping_file_name = 'externalFnMap.txt'
-
-    new_mapping_tool_name = 'clang-extdef-mapping'
-    new_mapping_file_name = 'externalDefMap.txt'
-
     major_version = clang_version_info.major_version
 
     if major_version > 7:
+        new_mapping_tool_name = 'clang-extdef-mapping'
         tool_name = new_mapping_tool_name
+        new_mapping_file_name = 'externalDefMap.txt'
+
         mapping_file = new_mapping_file_name
     else:
+        old_mapping_tool_name = 'clang-func-mapping'
         tool_name = old_mapping_tool_name
+        old_mapping_file_name = 'externalFnMap.txt'
+
         mapping_file = old_mapping_file_name
 
     installed_dir = clang_version_info.installed_dir

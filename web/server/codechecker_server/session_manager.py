@@ -84,11 +84,11 @@ class _Session:
         self.groups = groups
 
         self.session_lifetime = session_lifetime
-        self.refresh_time = refresh_time if refresh_time else None
+        self.refresh_time = refresh_time or None
         self.__root = is_root
         self.__database = database
         self.__can_expire = can_expire
-        self.last_access = last_access if last_access else datetime.now()
+        self.last_access = last_access or datetime.now()
 
     @property
     def is_root(self):
@@ -211,9 +211,11 @@ class SessionManager:
 
             regex_groups = self.__auth_config['regex_groups'] \
                                .get('groups', [])
-            d = dict()
-            for group_name, regex_list in regex_groups.items():
-                d[group_name] = [re.compile(r) for r in regex_list]
+            d = {
+                group_name: [re.compile(r) for r in regex_list]
+                for group_name, regex_list in regex_groups.items()
+            }
+
             self.__group_regexes_compiled = d
 
         # If no methods are configured as enabled, disable authentication.
@@ -224,15 +226,16 @@ class SessionManager:
                     self.__auth_config['method_dictionary'].get('enabled'):
                 found_auth_method = True
 
-            if 'method_ldap' in self.__auth_config and \
+            if 'ldap' not in UNSUPPORTED_METHODS:
+                if 'method_ldap' in self.__auth_config and \
                     self.__auth_config['method_ldap'].get('enabled'):
-                if 'ldap' not in UNSUPPORTED_METHODS:
                     found_auth_method = True
-                else:
-                    LOG.warning("LDAP authentication was enabled but "
-                                "prerequisites are NOT installed on the system"
-                                "... Disabling LDAP authentication.")
-                    self.__auth_config['method_ldap']['enabled'] = False
+            elif 'method_ldap' in self.__auth_config and \
+                    self.__auth_config['method_ldap'].get('enabled'):
+                LOG.warning("LDAP authentication was enabled but "
+                            "prerequisites are NOT installed on the system"
+                            "... Disabling LDAP authentication.")
+                self.__auth_config['method_ldap']['enabled'] = False
 
             if 'method_pam' in self.__auth_config and \
                     self.__auth_config['method_pam'].get('enabled'):
@@ -545,11 +548,10 @@ class SessionManager:
         try:
             # Try the database, if it is connected.
             transaction = self.__database_connection()
-            session_tokens = transaction.query(SessionRecord) \
+            return transaction.query(SessionRecord) \
                 .filter(SessionRecord.user_name == user_name) \
                 .filter(SessionRecord.can_expire.is_(True)) \
                 .all()
-            return session_tokens
         except Exception as e:
             LOG.error("Couldn't check login in the database: ")
             LOG.error(str(e))
@@ -572,7 +574,7 @@ class SessionManager:
                 .filter(SystemPermission.name == user_name) \
                 .filter(SystemPermission.permission == SUPERUSER.name) \
                 .limit(1).one_or_none()
-            return True if system_permission else False
+            return bool(system_permission)
         except Exception as e:
             LOG.error("Couldn't get system permission from database: ")
             LOG.error(str(e))

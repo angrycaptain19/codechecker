@@ -14,6 +14,7 @@ invoked and ran.
 """
 
 
+
 import argparse
 import os
 
@@ -24,38 +25,7 @@ from codechecker_analyzer.buildlog.host_check import check_intercept
 from codechecker_common import arg, logger
 
 
-epilog_env_var = f"""
-  CC_LOGGER_ABS_PATH       If the environment variable is defined, all relative
-                           paths in the compilation commands after '-I,
-                           -idirafter, -imultilib, -iquote, -isysroot -isystem,
-                           -iwithprefix, -iwithprefixbefore, -sysroot,
-                           --sysroot' will be converted to absolute PATH when
-                           written into the compilation database.
-  CC_LOGGER_DEBUG_FILE     Output file to print log messages. By default if we
-                           run the log command in debug mode it will generate
-                           a 'codechecker.logger.debug' file beside the log
-                           file.
-  CC_LOGGER_DEF_DIRS       If the environment variable is defined, the logger
-                           will extend the compiler argument list in the
-                           compilation database with the pre-configured include
-                           paths of the logged compiler.
-  CC_LOGGER_GCC_LIKE       Set to to a colon separated list to change which
-                           compilers should be logged. For example (default):
-                           export CC_LOGGER_GCC_LIKE="gcc:g++:clang:clang++:
-                           cc:c++". The logger will match any compilers with
-                           'gcc', 'g++', 'clang', 'clang++', 'cc' and 'c++' in
-                           their filenames.
-  CC_LOGGER_KEEP_LINK      If its value is not 'true' then object files will be
-                           removed from the build action. For example in case
-                           of this build command: 'gcc main.c object1.o
-                           object2.so' the 'object1.o' and 'object2.so' will be
-                           removed and only 'gcc main.c' will be captured. If
-                           only object files are provided to the compiler then
-                           the complete build action will be thrown away. This
-                           means that build actions which only perform linking
-                           will not be captured. We consider a file as object
-                           file if its extension is '.o', '.so' or '.a'.
-"""
+epilog_env_var = '\x1f  CC_LOGGER_ABS_PATH       If the environment variable is defined, all relative\x1f                           paths in the compilation commands after \'-I,\x1f                           -idirafter, -imultilib, -iquote, -isysroot -isystem,\x1f                           -iwithprefix, -iwithprefixbefore, -sysroot,\x1f                           --sysroot\' will be converted to absolute PATH when\x1f                           written into the compilation database.\x1f  CC_LOGGER_DEBUG_FILE     Output file to print log messages. By default if we\x1f                           run the log command in debug mode it will generate\x1f                           a \'codechecker.logger.debug\' file beside the log\x1f                           file.\x1f  CC_LOGGER_DEF_DIRS       If the environment variable is defined, the logger\x1f                           will extend the compiler argument list in the\x1f                           compilation database with the pre-configured include\x1f                           paths of the logged compiler.\x1f  CC_LOGGER_GCC_LIKE       Set to to a colon separated list to change which\x1f                           compilers should be logged. For example (default):\x1f                           export CC_LOGGER_GCC_LIKE="gcc:g++:clang:clang++:\x1f                           cc:c++". The logger will match any compilers with\x1f                           \'gcc\', \'g++\', \'clang\', \'clang++\', \'cc\' and \'c++\' in\x1f                           their filenames.\x1f  CC_LOGGER_KEEP_LINK      If its value is not \'true\' then object files will be\x1f                           removed from the build action. For example in case\x1f                           of this build command: \'gcc main.c object1.o\x1f                           object2.so\' the \'object1.o\' and \'object2.so\' will be\x1f                           removed and only \'gcc main.c\' will be captured. If\x1f                           only object files are provided to the compiler then\x1f                           the complete build action will be thrown away. This\x1f                           means that build actions which only perform linking\x1f                           will not be captured. We consider a file as object\x1f                           file if its extension is \'.o\', \'.so\' or \'.a\'.\x1f'
 
 
 def get_argparser_ctor_args():

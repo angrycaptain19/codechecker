@@ -62,9 +62,10 @@ def setup_package():
     if ret:
         sys.exit(ret)
 
-    output_dir = codechecker_cfg['reportdir'] \
-        if 'reportdir' in codechecker_cfg \
-        else os.path.join(codechecker_cfg['workspace'], 'reports')
+    output_dir = codechecker_cfg.get(
+        'reportdir', os.path.join(codechecker_cfg['workspace'], 'reports')
+    )
+
 
     codechecker_cfg['reportdir'] = output_dir
 
@@ -113,14 +114,12 @@ def _generate_suppress_file(suppress_file):
             hashlib.md5(suppress_line.encode("utf-8")).hexdigest() +
             '#' + hash_version)
 
-    s_file = open(suppress_file, 'w', encoding='utf-8', errors='ignore')
-    for k in suppress_stuff:
-        s_file.write(k + '||' + 'idziei éléáálk ~!@#$#%^&*() \n')
-        s_file.write(
-            k + '||' + 'test_~!@#$%^&*.cpp' +
-            '||' + 'idziei éléáálk ~!@#$%^&*(\n')
-        s_file.write(
-            hashlib.md5(suppress_line.encode("utf-8")).hexdigest() + '||' +
-            'test_~!@#$%^&*.cpp' + '||' + 'idziei éléáálk ~!@#$%^&*(\n')
-
-    s_file.close()
+    with open(suppress_file, 'w', encoding='utf-8', errors='ignore') as s_file:
+        for k in suppress_stuff:
+            s_file.write(k + '||' + 'idziei éléáálk ~!@#$#%^&*() \n')
+            s_file.write(
+                k + '||' + 'test_~!@#$%^&*.cpp' +
+                '||' + 'idziei éléáálk ~!@#$%^&*(\n')
+            s_file.write(
+                hashlib.md5(suppress_line.encode("utf-8")).hexdigest() + '||' +
+                'test_~!@#$%^&*.cpp' + '||' + 'idziei éléáálk ~!@#$%^&*(\n')

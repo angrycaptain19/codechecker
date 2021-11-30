@@ -103,14 +103,13 @@ def skip(
                           report.checker_name, report.report_hash,
                           report.review_status)
                 continue
-        else:
-            if src_comment_status_filter and \
+        elif src_comment_status_filter and \
                     'unreviewed' not in src_comment_status_filter:
-                LOG.debug("Filtered out by --review-status filter option: "
-                          "%s:%s [%s] %s [unreviewed]",
-                          report.file.original_path, report.line,
-                          report.checker_name, report.report_hash)
-                continue
+            LOG.debug("Filtered out by --review-status filter option: "
+                      "%s:%s [%s] %s [unreviewed]",
+                      report.file.original_path, report.line,
+                      report.checker_name, report.report_hash)
+            continue
 
         if processed_path_hashes is not None:
             report_path_hash = get_report_path_hash(report)

@@ -679,10 +679,9 @@ class MassStoreRun:
                     run_history.version_tag = None
                     session.add(run_history)
 
-            cc_versions = set()
-            for mip in self.__mips.values():
-                if mip.cc_version:
-                    cc_versions.add(mip.cc_version)
+            cc_versions = {
+                mip.cc_version for mip in self.__mips.values() if mip.cc_version
+            }
 
             cc_version = '; '.join(cc_versions) if cc_versions else None
             run_history = RunHistory(
@@ -1048,8 +1047,8 @@ class MassStoreRun:
 
         try:
             with TemporaryDirectory(
-                dir=self.__context.codechecker_workspace
-            ) as zip_dir:
+                        dir=self.__context.codechecker_workspace
+                    ) as zip_dir:
                 with LogTask(run_name=self.__name,
                              message="Unzip storage file"):
                     zip_size = unzip(self.__b64zip, zip_dir)
@@ -1140,13 +1139,9 @@ class MassStoreRun:
 
                             session.commit()
 
-                        inc_num_of_runs = 1
-
                         # If it's a run update, do not increment the number
                         # of runs of the current product.
-                        if update_run:
-                            inc_num_of_runs = None
-
+                        inc_num_of_runs = None if update_run else 1
                         self.__report_server._set_run_data_for_curr_product(
                             inc_num_of_runs, run_history_time)
 

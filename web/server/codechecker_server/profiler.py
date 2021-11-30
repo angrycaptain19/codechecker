@@ -63,8 +63,7 @@ def timeit(function):
         """
         No logging and measuring.
         """
-        res = function(*args, **kwargs)
-        return res
+        return function(*args, **kwargs)
 
     @wraps(function)
     def wrapper(*args, **kwargs):

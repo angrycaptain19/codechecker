@@ -125,8 +125,8 @@ class CheckerHandlingClangSATest(unittest.TestCase):
 
         def all_with_status(status):
             def f(checks, checkers):
-                result = set(check for check, data in checks.items()
-                             if data[0] == status)
+                result = {check for check, data in checks.items()
+                                 if data[0] == status}
                 return set(checkers) <= result
             return f
 

@@ -30,10 +30,8 @@ def get_user_comments(comments):
     """
     Separate comments and returns a tuple of user comments and system.
     """
-    user_comments = [c for c in comments
+    return [c for c in comments
                      if c.kind == CommentKind.USER]
-
-    return user_comments
 
 
 class TestExport(unittest.TestCase):

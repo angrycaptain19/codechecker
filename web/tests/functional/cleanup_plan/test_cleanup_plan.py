@@ -50,11 +50,8 @@ class TestComment(unittest.TestCase):
             ("Dummy", None, None),
         ]
 
-        cleanup_plan_id = {}
-        for name, description, due_date in data:
-            cleanup_plan_id[name] = self._cc_client.addCleanupPlan(
-                name, description, due_date)
-
+        cleanup_plan_id = {name: self._cc_client.addCleanupPlan(
+                name, description, due_date) for name, description, due_date in data}
         # Get all cleanup plans.
         cleanup_plans = self._cc_client.getCleanupPlans(None)
         self.assertEqual(len(cleanup_plans), 2)
@@ -133,7 +130,7 @@ class TestComment(unittest.TestCase):
         run_results = get_all_run_results(self._cc_client)
         self.assertTrue(run_results)
 
-        uniqued_report_hashes = set(r.bugHash for r in run_results)
+        uniqued_report_hashes = {r.bugHash for r in run_results}
         self.assertTrue(len(uniqued_report_hashes) > 2)
 
         it = iter(uniqued_report_hashes)

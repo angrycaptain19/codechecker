@@ -88,9 +88,12 @@ class TestInstances(unittest.TestCase):
 
         # Exactly one server should own each port generated
         instance_ports = [
-            i['port'] for i in instance_manager.get_instances(self.home)
-            if i['port'] == codechecker_1['viewer_port'] or
-            i['port'] == codechecker_2['viewer_port']]
+            i['port']
+            for i in instance_manager.get_instances(self.home)
+            if i['port']
+            in [codechecker_1['viewer_port'], codechecker_2['viewer_port']]
+        ]
+
 
         self.assertEqual(len(instance_ports), 2,
                          "The ports for the two started servers were not found"

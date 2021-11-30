@@ -334,12 +334,12 @@ class Parser(BaseParser):
                 edges = item['edges'][0]
 
                 edge = None
-                if prev_control_item:
-                    if not is_same_control_item(item, prev_control_item):
-                        edge = edges['start']
-                else:
+                if (
+                    prev_control_item
+                    and not is_same_control_item(item, prev_control_item)
+                    or not prev_control_item
+                ):
                     edge = edges['start']
-
                 if edge:
                     bug_path_positions.append(BugPathPosition(
                         file=files[edge[1]['file']],

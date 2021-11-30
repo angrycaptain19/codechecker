@@ -46,15 +46,8 @@ def init_logger(level, stream=None, logger_name='system'):
 
 EXPORT_TYPES = ['html', 'json', 'codeclimate', 'gerrit', 'baseline']
 
-epilog_env_var = f"""
-  CC_CHANGED_FILES       Path of changed files json from Gerrit. Use it when
-                         generating gerrit output.
-  CC_REPO_DIR            Root directory of the sources, i.e. the directory
-                         where the repository was cloned. Use it when
-                         generating gerrit output.
-  CC_REPORT_URL          URL where the report can be found. Use it when
-                         generating gerrit output.
-"""
+epilog_env_var = '\x1f  CC_CHANGED_FILES       Path of changed files json from Gerrit. Use it when\x1f                         generating gerrit output.\x1f  CC_REPO_DIR            Root directory of the sources, i.e. the directory\x1f                         where the repository was cloned. Use it when\x1f                         generating gerrit output.\x1f  CC_REPORT_URL          URL where the report can be found. Use it when\x1f                         generating gerrit output.\x1f'
+
 
 epilog_exit_status = """
 0 - No report

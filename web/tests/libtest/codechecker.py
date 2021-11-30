@@ -540,11 +540,14 @@ def store(codechecker_cfg, test_project_name):
 
 def serv_cmd(config_dir, port, pg_config=None, serv_args=None):
 
-    server_cmd = ['CodeChecker', 'server',
-                  '--config-directory', config_dir]
+    server_cmd = [
+        'CodeChecker',
+        'server',
+        '--config-directory',
+        config_dir,
+        *['--host', 'localhost', '--port', str(port)],
+    ]
 
-    server_cmd.extend(['--host', 'localhost',
-                       '--port', str(port)])
 
     server_cmd.extend(serv_args or [])
 

@@ -113,9 +113,11 @@ def __determine_compiler(gcc_command: List[str]) -> str:
     used compiler from ccache. This can be configured for ccache in config
     files or environment variables.
     """
-    if gcc_command[0].endswith('ccache'):
-        if find_executable(gcc_command[1]) is not None:
-            return gcc_command[1]
+    if (
+        gcc_command[0].endswith('ccache')
+        and find_executable(gcc_command[1]) is not None
+    ):
+        return gcc_command[1]
 
     return gcc_command[0]
 

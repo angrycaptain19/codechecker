@@ -108,7 +108,7 @@ def write_to_suppress_file(suppress_file, value, file_name, comment='',
         with codecs.open(suppress_file, 'r', 'utf-8') as s_file:
             suppress_data = get_suppress_data(s_file)
 
-        if not os.stat(suppress_file)[6] == 0:
+        if os.stat(suppress_file)[6] != 0:
             # File is not empty.
 
             res = [

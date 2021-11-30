@@ -669,9 +669,10 @@ def determine_compiler(gcc_command, is_executable_compiler_fun):
     used compiler from ccache. This can be configured for ccache in config
     files or environment variables.
     """
-    if gcc_command[0].endswith('ccache'):
-        if is_executable_compiler_fun(gcc_command[1]):
-            return gcc_command[1]
+    if gcc_command[0].endswith('ccache') and is_executable_compiler_fun(
+        gcc_command[1]
+    ):
+        return gcc_command[1]
 
     return gcc_command[0]
 
@@ -784,10 +785,7 @@ def __skip_sources(flag_iterator, _):
     This function skips the compiled source file names (i.e. the arguments
     which don't start with a dash character).
     """
-    if flag_iterator.item[0] != '-':
-        return True
-
-    return False
+    return flag_iterator.item[0] != '-'
 
 
 def __determine_action_type(flag_iterator, details):
@@ -894,10 +892,7 @@ def __skip_clang(flag_iterator, _):
     This function skips the flag pointed by the given flag_iterator with its
     parameters if any.
     """
-    if IGNORED_OPTIONS_CLANG.match(flag_iterator.item):
-        return True
-
-    return False
+    return bool(IGNORED_OPTIONS_CLANG.match(flag_iterator.item))
 
 
 def __skip_gcc(flag_iterator, _):
@@ -1050,10 +1045,6 @@ def parse_options(compilation_db_entry,
         for flag_processor in flag_processors:
             if flag_processor(it, details):
                 break
-        else:
-            pass
-            # print('Unhandled argument: ' + it.item)
-
     if details['action_type'] is None:
         details['action_type'] = BuildAction.COMPILE
 
@@ -1273,7 +1264,7 @@ def parse_unique_log(compilation_database,
                               used to execute the analysis
     """
     try:
-        uniqued_build_actions = dict()
+        uniqued_build_actions = {}
 
         if compile_uniqueing == "alpha":
             build_action_uniqueing = CompileActionUniqueingType.SOURCE_ALPHA

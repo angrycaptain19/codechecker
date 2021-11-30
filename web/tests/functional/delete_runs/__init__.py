@@ -102,8 +102,10 @@ def setup_package():
         time.sleep(1)
 
     # Save the run names in the configuration.
-    codechecker_cfg['run_names'] \
-        = [test_project_name + '_' + str(i) for i in range(0, 5)]
+    codechecker_cfg['run_names'] = [
+        test_project_name + '_' + str(i) for i in range(5)
+    ]
+
 
     test_config['codechecker_cfg'] = codechecker_cfg
 

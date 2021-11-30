@@ -151,7 +151,7 @@ int main()
         self._check_source_file(self._codechecker_cfg)
 
         runs = self._cc_client.getRunData(None, None, 0, None)
-        run_id = max([run.runId for run in runs])
+        run_id = max(run.runId for run in runs)
 
         reports = self._cc_client.getRunResults([run_id],
                                                 100,
@@ -162,8 +162,7 @@ int main()
                                                 False)
 
         self.assertEqual(len(reports), 5)
-        self.assertTrue(
-            all([r.detectionStatus == DetectionStatus.NEW for r in reports]))
+        self.assertTrue(all(r.detectionStatus == DetectionStatus.NEW for r in reports))
 
         # Check the second file version
         self._create_source_file(1)
@@ -310,7 +309,7 @@ int main()
         codechecker.store(self._codechecker_cfg, 'hello')
 
         runs = self._cc_client.getRunData(None, None, 0, None)
-        run_id = max([run.runId for run in runs])
+        run_id = max(run.runId for run in runs)
 
         reports = self._cc_client.getRunResults([run_id],
                                                 100,

@@ -13,9 +13,10 @@ def clangsa(label_file):
     r = http.request('GET', url)
     root = ET.fromstring(r.data)
 
-    checker_anchors = []
-    for x in root.findall('.//{*}a[@title="Permalink to this headline"]'):
-        checker_anchors.append(x.attrib['href'].lstrip('#'))
+    checker_anchors = [
+        x.attrib['href'].lstrip('#')
+        for x in root.findall('.//{*}a[@title="Permalink to this headline"]')
+    ]
 
     with open(label_file) as f:
         checkers = json.load(f)['labels'].keys()
@@ -39,9 +40,10 @@ def clang_tidy(label_file):
     r = http.request('GET', url)
     root = ET.fromstring(r.data)
 
-    checker_anchors = []
-    for x in root.findall('.//{*}a[@class="reference external"]'):
-        checker_anchors.append(x.attrib['href'])
+    checker_anchors = [
+        x.attrib['href']
+        for x in root.findall('.//{*}a[@class="reference external"]')
+    ]
 
     with open(label_file) as f:
         checkers = json.load(f)['labels'].keys()

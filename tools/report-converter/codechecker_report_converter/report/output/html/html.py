@@ -501,7 +501,7 @@ def parse(
                      "analyzer result file.", file_path)
             continue
 
-        LOG.info(f"\nParsing input file '%s'", file_path)
+        LOG.info("\nParsing input file '%s'", file_path)
 
         reports = report_file.get_reports(file_path)
         changed_source = convert(file_path, reports, output_path, html_builder)

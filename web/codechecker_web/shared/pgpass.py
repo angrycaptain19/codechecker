@@ -37,13 +37,10 @@ def _match_field(line, field):
             return line[1:]
 
         escaped = False
-        if not field:
+        if not field or field[0] != line[0]:
             return None
-        elif field[0] == line[0]:
-            line = line[1:]
-            field = field[1:]
-        else:
-            return None
+        line = line[1:]
+        field = field[1:]
     return None
 
 

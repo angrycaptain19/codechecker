@@ -167,7 +167,7 @@ def setup_logger(log_level=None, stream=None):
         handlers = LOG_CONFIG.get("handlers", {})
         for k in handlers.keys():
             LOG_CONFIG['handlers'][k]['level'] = log_level
-            if log_level == 'DEBUG' or log_level == 'DEBUG_ANALYZER':
+            if log_level in ['DEBUG', 'DEBUG_ANALYZER']:
                 LOG_CONFIG['handlers'][k]['formatter'] = 'precise'
 
     if stream:

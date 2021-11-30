@@ -64,11 +64,9 @@ def setup_auth_client(protocol, host, port, session_token=None):
     Setup the Thrift authentication client. Returns the client object and the
     session token for the session.
     """
-    client = ThriftAuthHelper(protocol, host, port,
+    return ThriftAuthHelper(protocol, host, port,
                               '/v' + CLIENT_API + '/Authentication',
                               session_token)
-
-    return client
 
 
 def login_user(protocol, host, port, username, login=False):

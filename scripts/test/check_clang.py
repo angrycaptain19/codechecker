@@ -34,9 +34,8 @@ def run_cmd(cmd):
     Return None if execution fails.
     """
     try:
-        version = subprocess.check_output(
+        return subprocess.check_output(
             cmd, encoding="utf-8", errors="ignore")
-        return version
     except subprocess.CalledProcessError as err:
         eprint(err)
         return None

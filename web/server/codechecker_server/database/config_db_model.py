@@ -53,11 +53,10 @@ class Product(Base):
                  confidentiality=None):
         self.endpoint = endpoint
         self.connection = conn_str
-        self.display_name = name if name else endpoint
+        self.display_name = name or endpoint
         self.description = description
         self.run_limit = run_limit
-        self.is_review_status_change_disabled = \
-            True if is_review_status_change_disabled else False
+        self.is_review_status_change_disabled = bool(is_review_status_change_disabled)
         self.confidentiality = confidentiality
 
 
