@@ -107,7 +107,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         # core.CallAndMessage is the new checker.
         test_res = {"core.NullDereference": 4}
@@ -128,7 +128,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         # core.CallAndMessage is the new checker.
         test_res = {"core.NullDereference": 4}
@@ -205,7 +205,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         # Resolved core checkers.
         test_res = {'core.CallAndMessage': 5}
@@ -245,7 +245,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         # Unresolved core checkers.
         test_res = {'core.StackAddressEscape': 3, 'core.DivideZero': 10}
@@ -323,7 +323,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         # All unresolved checkers.
         test_res = {'unix.Malloc': 1,
@@ -435,7 +435,7 @@ class DiffRemote(unittest.TestCase):
                                                     cmp_data,
                                                     None,
                                                     0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         test_res = {'core.CallAndMessage': 5}
         self.assertDictEqual(diff_dict, test_res)
@@ -457,7 +457,7 @@ class DiffRemote(unittest.TestCase):
                                              cmp_data,
                                              None,
                                              0)
-        diff_dict = dict((res.name, res.count) for res in diff_res)
+        diff_dict = {res.name: res.count for res in diff_res}
 
         test_res = {'unix.Malloc': 1,
                     'cplusplus.NewDelete': 5,
@@ -488,7 +488,7 @@ class DiffRemote(unittest.TestCase):
                                                      cmp_data,
                                                      None,
                                                      0)
-                diff_dict = dict((res.name, res.count) for res in diff_res)
+                diff_dict = {res.name: res.count for res in diff_res}
 
                 # There should be only one result for each checker name.
                 self.assertEqual(test_result_count, diff_dict[checker_name])
@@ -543,7 +543,7 @@ class DiffRemote(unittest.TestCase):
         """Test the maximum number of compound select query."""
         base_run_id = self._test_runs[0].runId
 
-        report_hashes = [str(i) for i in range(0, 10000)]
+        report_hashes = [str(i) for i in range(10000)]
         diff_res = self._cc_client.getDiffResultsHash([base_run_id],
                                                       report_hashes,
                                                       DiffType.NEW,

@@ -127,8 +127,7 @@ def exc_to_thrift_reqfail(func):
 
     def wrapper(*args, **kwargs):
         try:
-            res = func(*args, **kwargs)
-            return res
+            return func(*args, **kwargs)
 
         except sqlalchemy.exc.SQLAlchemyError as alchemy_ex:
             # Convert SQLAlchemy exceptions.
@@ -627,8 +626,6 @@ def get_report_details(session, report_ids):
     """
     Returns report details for the given report ids.
     """
-    details = {}
-
     # Get bug path events.
     bug_path_events = session.query(BugPathEvent, File.filepath) \
         .filter(BugPathEvent.report_id.in_(report_ids)) \
@@ -682,14 +679,15 @@ def get_report_details(session, report_ids):
         comment_data = comment_data_db_to_api(data)
         comment_data_list[report_id].append(comment_data)
 
-    for report_id in report_ids:
-        details[report_id] = \
-            ReportDetails(pathEvents=bug_events_list[report_id],
-                          executionPath=bug_point_list[report_id],
-                          extendedData=extended_data_list[report_id],
-                          comments=comment_data_list[report_id])
-
-    return details
+    return {
+        report_id: ReportDetails(
+            pathEvents=bug_events_list[report_id],
+            executionPath=bug_point_list[report_id],
+            extendedData=extended_data_list[report_id],
+            comments=comment_data_list[report_id],
+        )
+        for report_id in report_ids
+    }
 
 
 def bugpathevent_db_to_api(bpe):
@@ -1088,9 +1086,10 @@ class ThriftRequestHandler:
             args = dict(self.__permission_args)
             args['config_db_session'] = session
 
-            if not any([permissions.require_permission(
-                    perm, args, self._auth_session)
-                    for perm in required]):
+            if not any(
+                permissions.require_permission(perm, args, self._auth_session)
+                for perm in required
+            ):
                 raise codechecker_api_shared.ttypes.RequestFailed(
                     codechecker_api_shared.ttypes.ErrorCode.UNAUTHORIZED,
                     "You are not authorized to execute this action.")

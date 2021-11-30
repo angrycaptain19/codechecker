@@ -84,7 +84,7 @@ def print_version(output_format=None):
         print(twodim.to_str(output_format,
                             ["Kind", "Version"],
                             rows))
-    elif output_format == "json":
+    else:
         # Use a special JSON format here, instead of
         # [ {"kind": "something", "version": "0.0.0"}, {"kind": "foo", ... } ]
         # do

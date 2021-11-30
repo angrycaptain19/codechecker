@@ -440,14 +440,13 @@ class Report:
             return None
 
         with open(self.file.original_path,
-                  encoding='utf-8', errors='ignore') as f:
+                      encoding='utf-8', errors='ignore') as f:
             try:
                 self.__source_code_comments = \
                     self.__sc_handler.filter_source_line_comments(
                         f, self.line, self.checker_name)
             except SpellException as ex:
-                self.__source_code_comment_warnings.append(
-                    f"{self.file.name} contains {str(ex)}")
+                self.__source_code_comment_warnings.append(f'{self.file.name} contains {ex}')
 
         if len(self.__source_code_comments) == 1:
             LOG.debug("Found source code comment for report '%s' in file "

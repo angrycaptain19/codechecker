@@ -291,14 +291,14 @@ class TestReportFilter(unittest.TestCase):
             None, 500, 0, sort_types, unique_filter, None, False)
         unique_result_count = self._cc_client.getRunResultCount(
             None, unique_filter, None)
-        unique_bughash = set([res.bugHash for res in run_results])
+        unique_bughash = {res.bugHash for res in run_results}
 
         # Get simple results.
         run_results = self._cc_client.getRunResults(
             None, 500, 0, sort_types, simple_filter, None, False)
         simple_result_count = self._cc_client.getRunResultCount(
             None, simple_filter, None)
-        simple_bughash = set([res.bugHash for res in run_results])
+        simple_bughash = {res.bugHash for res in run_results}
 
         diff_hashes = list(simple_bughash.difference(unique_bughash))
         self.assertEqual(0, len(diff_hashes))
@@ -319,11 +319,7 @@ class TestReportFilter(unittest.TestCase):
                                                              unique_filter,
                                                              None)
 
-        unique_bugs = set()
-        # Uniqueing is done based on bug hash.
-        for b in bugs:
-            unique_bugs.add((b['hash']))
-
+        unique_bugs = {b['hash'] for b in bugs}
         self.assertEqual(len(unique_bugs), run_result_count)
 
     def test_bug_path_length_filter(self):

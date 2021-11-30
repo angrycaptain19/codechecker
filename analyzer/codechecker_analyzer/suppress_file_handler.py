@@ -106,7 +106,7 @@ def write_to_suppress_file(suppress_file, value, file_name, comment='',
                   encoding='utf-8', errors='ignore') as s_file:
             suppress_data = get_suppress_data(s_file)
 
-        if not os.stat(suppress_file)[6] == 0:
+        if os.stat(suppress_file)[6] != 0:
             # File is not empty.
 
             res = [

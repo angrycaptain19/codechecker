@@ -48,17 +48,25 @@ class TUCollectorTest(unittest.TestCase):
 
         os.remove(zip_file_name)
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'main.c')) for path in files]))
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'main.c')) for path in files)
+        )
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'main.cpp')) for path in files]))
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'vector')) for path in files]))
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'main.cpp')) for path in files)
+        )
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'hello.c')) for path in files]))
+
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'vector')) for path in files)
+        )
+
+
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'hello.c')) for path in files)
+        )
+
 
         self.assertIn('compilation_database.json', files)
 
@@ -82,14 +90,21 @@ class TUCollectorTest(unittest.TestCase):
                 with zipfile.ZipFile(zip_file.name) as archive:
                     files = archive.namelist()
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'vector')) for path in files]))
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'vector')) for path in files)
+        )
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'ctu.cpp')) for path in files]))
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'zero.cpp')) for path in files]))
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'ctu.cpp')) for path in files)
+        )
 
-        self.assertTrue(any(
-            [path.endswith(os.path.join('/', 'zero.h')) for path in files]))
+
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'zero.cpp')) for path in files)
+        )
+
+
+        self.assertTrue(
+            any(path.endswith(os.path.join('/', 'zero.h')) for path in files)
+        )

@@ -64,12 +64,7 @@ def handle_list_tokens(args):
         print(CmdLineOutputEncoder().encode(tokens))
     else:  # plaintext, csv
         header = ['Token', 'Description', 'Last access']
-        rows = []
-        for res in tokens:
-            rows.append((res.token,
-                         res.description if res.description else '',
-                         res.lastAccess))
-
+        rows = [(res.token, res.description or '', res.lastAccess) for res in tokens]
         print(twodim.to_str(args.output_format, header, rows))
 
 

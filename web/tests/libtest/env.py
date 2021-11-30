@@ -50,17 +50,16 @@ def get_postgresql_cfg():
     settings if not return none.
     """
     use_postgresql = os.environ.get('TEST_USE_POSTGRESQL', '') == 'true'
-    if use_postgresql:
-        pg_db_config = {'dbaddress': 'localhost',
-                        'dbport': os.environ.get('TEST_DBPORT'),
-                        'dbname': 'codechecker_config_' +
-                                  os.environ['CODECHECKER_DB_DRIVER']
-                        }
-        if os.environ.get('TEST_DBUSERNAME', False):
-            pg_db_config['dbusername'] = os.environ['TEST_DBUSERNAME']
-        return pg_db_config
-    else:
+    if not use_postgresql:
         return None
+    pg_db_config = {'dbaddress': 'localhost',
+                    'dbport': os.environ.get('TEST_DBPORT'),
+                    'dbname': 'codechecker_config_' +
+                              os.environ['CODECHECKER_DB_DRIVER']
+                    }
+    if os.environ.get('TEST_DBUSERNAME', False):
+        pg_db_config['dbusername'] = os.environ['TEST_DBUSERNAME']
+    return pg_db_config
 
 
 def add_database(dbname, env=None):

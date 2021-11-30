@@ -314,8 +314,7 @@ class ClangSA(analyzer_base.SourceAnalyzer):
         triple_arch = ctu_triple_arch.get_triple_arch(self.buildaction,
                                                       self.source_file,
                                                       config, environ)
-        ctu_dir = os.path.join(config.ctu_dir, triple_arch)
-        return ctu_dir
+        return os.path.join(config.ctu_dir, triple_arch)
 
     def analyzer_mentioned_file_real_path(self, mentioned_path):
         """

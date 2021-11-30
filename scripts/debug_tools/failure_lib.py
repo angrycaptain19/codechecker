@@ -52,7 +52,7 @@ def change_paths(string, pathModifierFun):
             i = path_end - 1
         else:
             result.extend(string[i])
-        i = i + 1
+        i += 1
     return ''.join(result)
 
 

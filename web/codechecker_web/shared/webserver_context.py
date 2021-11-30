@@ -131,9 +131,7 @@ class Context(metaclass=Singleton):
         self.__package_git_hash = package_git_hash
 
         self.__package_git_tag = package_git_tag
-        if (LOG.getEffectiveLevel() == logger.DEBUG or
-                LOG.getEffectiveLevel() ==
-                logger.DEBUG_ANALYZER):
+        if LOG.getEffectiveLevel() in [logger.DEBUG, logger.DEBUG_ANALYZER]:
             self.__package_git_tag = package_git_dirtytag
 
     @property
@@ -183,18 +181,12 @@ class Context(metaclass=Singleton):
     @property
     def path_env_extra(self):
         extra_paths = self.pckg_layout.get('path_env_extra', [])
-        paths = []
-        for path in extra_paths:
-            paths.append(os.path.join(self._data_files_dir_path, path))
-        return paths
+        return [os.path.join(self._data_files_dir_path, path) for path in extra_paths]
 
     @property
     def ld_lib_path_extra(self):
         extra_lib = self.pckg_layout.get('ld_lib_path_extra', [])
-        ld_paths = []
-        for path in extra_lib:
-            ld_paths.append(os.path.join(self._data_files_dir_path, path))
-        return ld_paths
+        return [os.path.join(self._data_files_dir_path, path) for path in extra_lib]
 
     @property
     def data_files_dir_path(self):

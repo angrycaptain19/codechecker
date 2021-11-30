@@ -85,43 +85,40 @@ def perform_build_command(logfile, command, context, keep_link, silent=False,
         log_env = original_env
         LOG.debug_analyzer(command)
 
-    # Run user's commands in shell.
+    elif platform.system() == 'Linux':
+        LOG.debug_analyzer("with ld logger ...")
+        # Same as linux's touch.
+        open(logfile, 'a', encoding="utf-8", errors="ignore").close()
+        log_env = env.get_log_env(logfile, context, original_env)
+        if 'CC_LOGGER_GCC_LIKE' not in log_env:
+            log_env['CC_LOGGER_GCC_LIKE'] = 'gcc:g++:clang:clang++:cc:c++'
+        if keep_link or ('CC_LOGGER_KEEP_LINK' in log_env and
+                         log_env['CC_LOGGER_KEEP_LINK'] == 'true'):
+            log_env['CC_LOGGER_KEEP_LINK'] = 'true'
+
+        is_debug = verbose and verbose in ['debug', 'debug_analyzer']
+        if is_debug and 'CC_LOGGER_DEBUG_FILE' not in log_env:
+            if 'CC_LOGGER_DEBUG_FILE' in os.environ:
+                log_file = os.environ['CC_LOGGER_DEBUG_FILE']
+            else:
+                log_file = os.path.join(os.path.dirname(logfile),
+                                        'codechecker.logger.debug')
+
+            if os.path.exists(log_file):
+                os.remove(log_file)
+
+            log_env['CC_LOGGER_DEBUG_FILE'] = log_file
+    elif platform.system() == 'Windows':
+        LOG.error("This command is not supported on Windows. You can use "
+                  "the following tools to generate a compilation "
+                  "database: \n"
+                  " - CMake (CMAKE_EXPORT_COMPILE_COMMANDS)\n"
+                  " - compiledb (https://pypi.org/project/compiledb/)")
+        sys.exit(1)
     else:
-        # TODO: better platform detection.
-        if platform.system() == 'Linux':
-            LOG.debug_analyzer("with ld logger ...")
-            # Same as linux's touch.
-            open(logfile, 'a', encoding="utf-8", errors="ignore").close()
-            log_env = env.get_log_env(logfile, context, original_env)
-            if 'CC_LOGGER_GCC_LIKE' not in log_env:
-                log_env['CC_LOGGER_GCC_LIKE'] = 'gcc:g++:clang:clang++:cc:c++'
-            if keep_link or ('CC_LOGGER_KEEP_LINK' in log_env and
-                             log_env['CC_LOGGER_KEEP_LINK'] == 'true'):
-                log_env['CC_LOGGER_KEEP_LINK'] = 'true'
-
-            is_debug = verbose and verbose in ['debug', 'debug_analyzer']
-            if is_debug and 'CC_LOGGER_DEBUG_FILE' not in log_env:
-                if 'CC_LOGGER_DEBUG_FILE' in os.environ:
-                    log_file = os.environ['CC_LOGGER_DEBUG_FILE']
-                else:
-                    log_file = os.path.join(os.path.dirname(logfile),
-                                            'codechecker.logger.debug')
-
-                if os.path.exists(log_file):
-                    os.remove(log_file)
-
-                log_env['CC_LOGGER_DEBUG_FILE'] = log_file
-        elif platform.system() == 'Windows':
-            LOG.error("This command is not supported on Windows. You can use "
-                      "the following tools to generate a compilation "
-                      "database: \n"
-                      " - CMake (CMAKE_EXPORT_COMPILE_COMMANDS)\n"
-                      " - compiledb (https://pypi.org/project/compiledb/)")
-            sys.exit(1)
-        else:
-            LOG.error("Intercept-build is required to run CodeChecker in "
-                      "OS X.")
-            sys.exit(1)
+        LOG.error("Intercept-build is required to run CodeChecker in "
+                  "OS X.")
+        sys.exit(1)
 
     LOG.debug_analyzer(log_env)
     try:
@@ -161,5 +158,4 @@ def default_compilation_db(workspace_path, run_name):
     uid = str(uuid4())[:10]  # 10 chars should be unique enough
     cmp_json_filename = 'compilation_commands_' + run_name + '_' \
                         + uid + '.json'
-    compilation_commands = os.path.join(workspace_path, cmp_json_filename)
-    return compilation_commands
+    return os.path.join(workspace_path, cmp_json_filename)

@@ -39,20 +39,16 @@ def prepare(test_project_path, temporary_test_path):
         for filename in fnmatch.filter(filenames, '*.plist'):
             plist_test.prefix_file_path(os.path.join(root, filename),
                                         test_project)
-    test_project_data = {
+    return {
         "test_project_path": test_project,
         "test_project_reports": test_reports
     }
-
-    return test_project_data
 
 
 def get_info(test_project):
     test_proj_cfg = os.path.join(os.path.realpath(path(test_project)),
                                  'project_info.json')
-    project_info = \
-        json.load(open(test_proj_cfg, encoding="utf-8", errors="ignore"))
-    return project_info
+    return json.load(open(test_proj_cfg, encoding="utf-8", errors="ignore"))
 
 
 def path(test_project):

@@ -148,8 +148,8 @@ class MetadataInfoParser:
         """ Insert checkers from source to dest of the given analyzer. """
         if analyzer_name in dest:
             d_chks = dest[analyzer_name]
-            for checker in source:
-                if checker in d_chks and source[checker] != d_chks[checker]:
+            for checker, value in source.items():
+                if checker in d_chks and value != d_chks[checker]:
                     LOG.debug('Different checker statuses for %s', checker)
                 dest[analyzer_name][checker] = source[checker]
         else:

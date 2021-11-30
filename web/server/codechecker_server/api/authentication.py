@@ -177,10 +177,7 @@ class ThriftAuthHandler:
         user_name = self.getLoggedInUser()
         LOG.debug("'%s' logging out...", user_name)
 
-        token = None
-        if self.__auth_session:
-            token = self.__auth_session.token
-
+        token = self.__auth_session.token if self.__auth_session else None
         is_logged_out = self.__manager.invalidate(token)
         if is_logged_out:
             LOG.info("'%s' logged out.", user_name)
@@ -426,11 +423,7 @@ class ThriftAuthHandler:
                 .filter(Session.can_expire.is_(False)) \
                 .all()
 
-            result = []
-            for t in sessionTokens:
-                result.append(SessionTokenData(
+            return [SessionTokenData(
                     t.token,
                     t.description,
-                    str(t.last_access)))
-
-            return result
+                    str(t.last_access)) for t in sessionTokens]

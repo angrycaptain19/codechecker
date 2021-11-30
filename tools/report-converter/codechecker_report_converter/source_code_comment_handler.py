@@ -36,9 +36,7 @@ def contains_codechecker_comment(fp):
         fp.seek(0)
     match = re.search(".*codechecker_.*", fp.read())
     fp.seek(pos_before_read)
-    if not match:
-        return False
-    return True
+    return bool(match)
 
 
 class SpellException(Exception):
@@ -158,8 +156,6 @@ class SourceCodeCommentHandler:
 
         checkers_names = set()
         review_status = 'false_positive'
-        message = "WARNING! source code comment is missing"
-
         # Get checker names from suppress comment.
         checkers = res.group('checkers')
         if checkers == "all":
@@ -171,16 +167,14 @@ class SourceCodeCommentHandler:
 
         # Get comment message from suppress comment.
         comment = res.group('comment')
-        if comment:
-            message = comment
-
+        message = comment or "WARNING! source code comment is missing"
         # Get status from suppress comment.
         status = res.group('status')
-        if status == 'codechecker_intentional':
-            review_status = 'intentional'
-        elif status == 'codechecker_confirmed':
+        if status == 'codechecker_confirmed':
             review_status = 'confirmed'
 
+        elif status == 'codechecker_intentional':
+            review_status = 'intentional'
         return SourceCodeComment(checkers_names, message, review_status)
 
     def has_source_line_comments(self, fp: TextIO, line: int) -> bool:
@@ -254,10 +248,14 @@ class SourceCodeCommentHandler:
             cstyle_start, cstyle_end = \
                 SourceCodeCommentHandler.__check_if_cstyle_comment(source_line)
 
-            if not is_comment and not cstyle_start and not cstyle_end:
-                if not cstyle_end_found:
-                    # Not a comment
-                    break
+            if (
+                not is_comment
+                and not cstyle_start
+                and not cstyle_end
+                and not cstyle_end_found
+            ):
+                # Not a comment
+                break
 
             if not cstyle_end_found and cstyle_end:
                 cstyle_end_found = True

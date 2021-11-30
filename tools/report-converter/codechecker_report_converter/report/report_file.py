@@ -24,8 +24,9 @@ LOG = logging.getLogger('report-converter')
 SUPPORTED_ANALYZER_EXTENSIONS = [plist.EXTENSION]
 
 
-__SUPPORTED_ANALYZER_EXTENSIONS = tuple([
-    f".{extension}" for extension in SUPPORTED_ANALYZER_EXTENSIONS])
+__SUPPORTED_ANALYZER_EXTENSIONS = tuple(
+    f".{extension}" for extension in SUPPORTED_ANALYZER_EXTENSIONS
+)
 
 
 def is_supported(analyzer_result_file_path: str) -> bool:
@@ -100,7 +101,7 @@ def analyzer_result_files(
                 yield input_dir_path, [input_path]
         elif os.path.isdir(input_path):
             input_dir_path = input_path
-            for root_dir, _, file_names in os.walk(input_path):
+            for root_dir, _, file_names in os.walk(input_dir_path):
                 analyzer_result_file_paths: List[str] = []
                 for file_name in file_names:
                     input_file_path = os.path.join(root_dir, file_name)

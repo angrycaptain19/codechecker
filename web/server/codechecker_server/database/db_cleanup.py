@@ -141,9 +141,10 @@ def upgrade_severity_levels(session_maker, checker_labels):
     """
     LOG.debug("Upgrading severity levels started...")
 
-    severity_map = {}
-    for checker in checker_labels.checkers():
-        severity_map[checker] = checker_labels.severity(checker)
+    severity_map = {
+        checker: checker_labels.severity(checker)
+        for checker in checker_labels.checkers()
+    }
 
     for severity_map_small in util.chunks(
             iter(severity_map.items()), SQLITE_LIMIT_COMPOUND_SELECT):

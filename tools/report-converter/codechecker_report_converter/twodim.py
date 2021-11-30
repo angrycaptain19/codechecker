@@ -37,7 +37,7 @@ def to_str(
 
     if format_name == 'rows':
         return to_rows(rows)
-    elif format_name == 'table' or format_name == 'plaintext':
+    elif format_name in {'table', 'plaintext'}:
         # TODO: 'plaintext' for now to support the 'CodeChecker cmd' interface.
         return to_table(all_rows, True, separate_footer)
     elif format_name == 'csv':
@@ -63,7 +63,7 @@ def to_rows(lines: Iterable[str]) -> str:
     # Count the column width.
     widths: List[int] = []
     for line in lns:
-        for i, size in enumerate([len(str(x)) for x in line]):
+        for i, size in enumerate(len(str(x)) for x in line):
             while i >= len(widths):
                 widths.append(0)
             if size > widths[i]:
@@ -113,16 +113,17 @@ def to_table(
     # Count the column width.
     widths: List[int] = []
     for line in lns:
-        for i, size in enumerate([len(str(x)) for x in line]):
+        for i, size in enumerate(len(str(x)) for x in line):
             while i >= len(widths):
                 widths.append(0)
             if size > widths[i]:
                 widths[i] = size
 
     # Generate the format string to pad the columns.
-    print_string = ""
-    for i, width in enumerate(widths):
-        print_string += "{" + str(i) + ":" + str(width) + "} | "
+    print_string = "".join(
+        "{" + str(i) + ":" + str(width) + "} | "
+        for i, width in enumerate(widths)
+    )
 
     if not print_string:
         return ''
@@ -163,10 +164,7 @@ def to_csv(lines: Iterable[str]) -> str:
         if len(line) > columns:
             columns = len(line)
 
-    print_string = ""
-    for i in range(columns):
-        print_string += "{" + str(i) + "},"
-
+    print_string = "".join("{" + str(i) + "}," for i in range(columns))
     if not print_string:
         return ''
 
@@ -194,8 +192,4 @@ def to_dictlist(key_list, lines):
     of keys.
     """
 
-    res = []
-    for line in lines:
-        res.append({key: value for (key, value) in zip(key_list, line)})
-
-    return res
+    return [{key: value for (key, value) in zip(key_list, line)} for line in lines]

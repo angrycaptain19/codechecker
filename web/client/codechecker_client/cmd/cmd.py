@@ -43,7 +43,7 @@ def valid_time(t):
 
     try:
         parts = list(map(int, t.split(':')))
-        parts = parts + [0] * (6 - len(parts))
+        parts += [0] * (6 - len(parts))
         year, month, day, hour, minute, second = parts
         return datetime.datetime(year, month, day, hour, minute, second)
     except ValueError as ex:
@@ -839,14 +839,11 @@ def __register_products(parser):
             def arg_match(options):
                 """Checks and selects the option string specified in 'options'
                 that are present in the invocation argv."""
-                matched_args = []
-                for option in options:
-                    if any([arg if option.startswith(arg) else None
-                            for arg in sys.argv[1:]]):
-                        matched_args.append(option)
-                        continue
-
-                return matched_args
+                return [
+                    option
+                    for option in options
+                    if any(arg if option.startswith(arg) else None for arg in sys.argv[1:])
+                ]
 
             # See if there is a "PostgreSQL argument" specified in the
             # invocation without '--postgresql' being there. There is no way

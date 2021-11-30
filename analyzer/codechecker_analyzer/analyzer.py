@@ -192,11 +192,14 @@ def perform_analysis(args, skip_handler, context, actions, metadata_tool,
         ctu_collect = args.ctu_phases[0]
         ctu_analyze = args.ctu_phases[1]
 
-    if 'stats_enabled' in args and args.stats_enabled:
-        if ClangSA.ANALYZER_NAME not in analyzers:
-            LOG.debug("Statistics can only be used with "
-                      "the Clang Static Analyzer.")
-            return
+    if (
+        'stats_enabled' in args
+        and args.stats_enabled
+        and ClangSA.ANALYZER_NAME not in analyzers
+    ):
+        LOG.debug("Statistics can only be used with "
+                  "the Clang Static Analyzer.")
+        return
 
     actions = prepare_actions(actions, analyzers)
     config_map = analyzer_types.build_config_handlers(args, context, analyzers)
@@ -343,7 +346,7 @@ def perform_analysis(args, skip_handler, context, actions, metadata_tool,
     if 'stats_dir' in args and args.stats_dir:
         statistics_data = manager.dict({'stats_out_dir': args.stats_dir})
 
-    if ctu_analyze or statistics_data or (not ctu_analyze and not ctu_collect):
+    if ctu_analyze or statistics_data or not ctu_collect:
 
         LOG.info("Starting static analysis ...")
         analysis_manager.start_workers(actions_map, actions, context,

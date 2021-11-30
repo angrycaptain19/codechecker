@@ -79,5 +79,4 @@ def get(clang_binary, env=None):
         encoding="utf-8",
         errors="ignore")
     version_parser = ClangVersionInfoParser(clang_binary)
-    version_info = version_parser.parse(compiler_version)
-    return version_info
+    return version_parser.parse(compiler_version)

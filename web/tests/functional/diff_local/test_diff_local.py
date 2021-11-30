@@ -204,8 +204,7 @@ class DiffLocal(unittest.TestCase):
         cfg = dict(self._codechecker_cfg)
         cfg['analyzers'] = ['clang-tidy']
 
-        makefile = f"all:\n\t$(CXX) -c main.cpp -Wno-all -Wno-extra " \
-                   f"-o /dev/null\n"
+        makefile = 'all:\n\t$(CXX) -c main.cpp -Wno-all -Wno-extra -o /dev/null\n'
         with open(os.path.join(self._test_dir, 'Makefile'), 'w',
                   encoding="utf-8", errors="ignore") as f:
             f.write(makefile)
@@ -302,10 +301,15 @@ int main()
             r for r in unresolved_results
             if r['checker_name'] == 'core.DivideZero'))
 
-        self.assertFalse(any(
-            r for r in unresolved_results
-            if r['checker_name'] == 'core.NullDereference' or
-            r['checker_name'] == 'core.CallAndMessage'))
+        self.assertFalse(
+            any(
+                r
+                for r in unresolved_results
+                if r['checker_name']
+                in ['core.NullDereference', 'core.CallAndMessage']
+            )
+        )
+
 
         # Get resolved results.
         resolved_results, err, returncode = get_diff_results(

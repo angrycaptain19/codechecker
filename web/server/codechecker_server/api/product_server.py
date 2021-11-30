@@ -67,9 +67,10 @@ class ThriftProductHandler:
                 args = dict(self.__permission_args)
                 args['config_db_session'] = session
 
-            if not any([permissions.require_permission(
-                            perm, args, self.__auth_session)
-                        for perm in required]):
+            if not any(
+                permissions.require_permission(perm, args, self.__auth_session)
+                for perm in required
+            ):
                 raise codechecker_api_shared.ttypes.RequestFailed(
                     codechecker_api_shared.ttypes.ErrorCode.UNAUTHORIZED,
                     "You are not authorized to execute this action.")
@@ -288,7 +289,7 @@ class ThriftProductHandler:
                 confidentiality = \
                         confidentiality_enum(product.confidentiality)
 
-            prod = ttypes.ProductConfiguration(
+            return ttypes.ProductConfiguration(
                 id=product.id,
                 endpoint=product.endpoint,
                 displayedName_b64=convert.to_b64(product.display_name),
@@ -297,8 +298,6 @@ class ThriftProductHandler:
                 runLimit=product.run_limit,
                 isReviewStatusChangeDisabled=is_review_status_change_disabled,
                 confidentiality=confidentiality)
-
-            return prod
 
     @timeit
     def addProduct(self, product):

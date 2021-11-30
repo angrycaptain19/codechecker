@@ -75,9 +75,10 @@ def setup_package():
 
     skip_file = codechecker_cfg.pop('skip_file')
 
-    output_dir = codechecker_cfg['reportdir'] \
-        if 'reportdir' in codechecker_cfg \
-        else os.path.join(codechecker_cfg['workspace'], 'reports')
+    output_dir = codechecker_cfg.get(
+        'reportdir', os.path.join(codechecker_cfg['workspace'], 'reports')
+    )
+
 
     codechecker_cfg['reportdir'] = output_dir
 
@@ -139,8 +140,6 @@ def _generate_skip_list_file(skip_list_file):
     print('Skip list file content: ' + skip_list_file)
     print('\n'.join(skip_list_content))
 
-    s_file = open(skip_list_file, 'w', encoding="utf-8", errors="ignore")
-    for k in skip_list_content:
-        s_file.write(k + '\n')
-
-    s_file.close()
+    with open(skip_list_file, 'w', encoding="utf-8", errors="ignore") as s_file:
+        for k in skip_list_content:
+            s_file.write(k + '\n')

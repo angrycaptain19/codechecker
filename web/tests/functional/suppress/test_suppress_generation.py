@@ -146,8 +146,9 @@ class TestSuppress(unittest.TestCase):
         self.assertIsNotNone(run_results)
         self.assertNotEqual(len(run_results), 0)
 
-        for bug_hash in hash_to_suppress_msgs:
-            expected_data = hash_to_suppress_msgs[bug_hash]
+        # Change review status to confirmed bug.
+        review_comment = "This is really a bug"
+        for bug_hash, expected_data in hash_to_suppress_msgs.items():
             report_data_of_bug = [
                 report_data for report_data in run_results
                 if report_data.bugHash == bug_hash]
@@ -160,8 +161,6 @@ class TestSuppress(unittest.TestCase):
             self.assertEqual(report_data.reviewData.status,
                              expected_data['status'])
 
-            # Change review status to confirmed bug.
-            review_comment = "This is really a bug"
             status = ReviewStatus.CONFIRMED
             success = self._cc_client.changeReviewStatus(
                 report_data.reportId, status, review_comment)

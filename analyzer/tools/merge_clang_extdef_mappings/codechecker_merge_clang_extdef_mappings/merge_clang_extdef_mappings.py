@@ -15,9 +15,8 @@ def _generate_func_map_lines(func_map_dir):
     files = glob.glob(os.path.join(func_map_dir, '*'))
     for func_map_file in files:
         with open(func_map_file, 'r',
-                  encoding='utf-8', errors="ignore") as func_map:
-            for line in func_map:
-                yield line
+                          encoding='utf-8', errors="ignore") as func_map:
+            yield from func_map
 
 
 def _create_global_ctu_function_map(func_map_lines):
@@ -37,13 +36,11 @@ def _create_global_ctu_function_map(func_map_lines):
         else:
             mangled_to_asts[mangled_name].add(ast_file)
 
-    mangled_ast_pairs = []
-
-    for mangled_name, ast_files in mangled_to_asts.items():
-        if len(ast_files) == 1:
-            mangled_ast_pairs.append((mangled_name, ast_files.pop()))
-
-    return mangled_ast_pairs
+    return [
+        (mangled_name, ast_files.pop())
+        for mangled_name, ast_files in mangled_to_asts.items()
+        if len(ast_files) == 1
+    ]
 
 
 def merge(func_map_dir, output_file):

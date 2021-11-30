@@ -222,9 +222,10 @@ class LocalRemote(unittest.TestCase):
                          ["--url", self._url, '-e', html_reports,
                           "--verbose", "debug"])
 
-        checked_files = set()
-        for res in self.get_local_remote_diff(None, 'json'):
-            checked_files.add(os.path.basename(res['file']['path']))
+        checked_files = {
+            os.path.basename(res['file']['path'])
+            for res in self.get_local_remote_diff(None, 'json')
+        }
 
         # Check if index.html file was generated.
         html_index = os.path.join(html_reports, "index.html")
@@ -516,7 +517,7 @@ class LocalRemote(unittest.TestCase):
 
         file_path = malloc_issues[0]["location"]["path"]
         self.assertTrue(os.path.isabs(file_path))
-        self.assertTrue(file_path.endswith(f"/new_delete.cpp"))
+        self.assertTrue(file_path.endswith('/new_delete.cpp'))
 
         shutil.rmtree(export_dir_path, ignore_errors=True)
 
@@ -612,7 +613,7 @@ class LocalRemote(unittest.TestCase):
             '--new', 'json',
             ["--url", self._url,
              "--review-status", "unreviewed", "confirmed", "false_positive"])
-        new_hashes = sorted(set([n['report_hash'] for n in res]))
+        new_hashes = sorted({n['report_hash'] for n in res})
 
         new_results, err, returncode = get_diff_results(
             [self._run_names[0]], [baseline_file_path], '--new', 'json',
@@ -632,7 +633,7 @@ class LocalRemote(unittest.TestCase):
             '--unresolved', 'json',
             ["--url", self._url,
              "--review-status", "unreviewed", "confirmed", "false_positive"])
-        unresolved_hashes = sorted(set([n['report_hash'] for n in res]))
+        unresolved_hashes = sorted({n['report_hash'] for n in res})
 
         unresolved_results, err, returncode = get_diff_results(
             [self._run_names[0]], [baseline_file_path],
@@ -653,7 +654,7 @@ class LocalRemote(unittest.TestCase):
             '--resolved', 'json',
             ["--url", self._url,
              "--review-status", "unreviewed", "confirmed", "false_positive"])
-        resolved_hashes = set([n['report_hash'] for n in res])
+        resolved_hashes = {n['report_hash'] for n in res}
 
         resolved_results, _, returncode = get_diff_results(
             [self._run_names[0]], [baseline_file_path], '--resolved', 'json',

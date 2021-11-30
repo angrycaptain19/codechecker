@@ -97,7 +97,7 @@ def bazel_aquery(build_arguments):
             configs.append(argument)
     logging.debug("Targets: %s", targets)
     logging.debug("Configs: %s", configs)
-    if len(targets) < 1:
+    if not targets:
         logging.error(
             "No targets found for bazel query in: %s",
             build_arguments)
@@ -122,8 +122,7 @@ def bazel_aquery(build_arguments):
 
     out = run_command(command)
     if out:
-        data = json.loads(out)
-        return data
+        return json.loads(out)
 
 
 def get_compile_commands(data,

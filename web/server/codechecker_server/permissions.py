@@ -205,16 +205,15 @@ class PermissionHandler(metaclass=ABCMeta):
         (or None, if authentication is disabled on the server!) is given
         the current permission.
         """
-        if not auth_session:
+        if (
+            not auth_session
+            or auth_session.is_root
+            and self._perm_name == 'SUPERUSER'
+        ):
             # If the user does not have an auth_session it means it is a guest
             # and the server is running in authentication disabled mode.
             # All permissions are automatically granted in this case.
             return True
-        elif auth_session.is_root and self._perm_name == 'SUPERUSER':
-            # The special master superuser (root) automatically has the
-            # SUPERUSER permission.
-            return True
-
         name = self._has_perm_impl([auth_session.user], False)
         groups = self._has_perm_impl(auth_session.groups, True)
 
@@ -289,15 +288,13 @@ class SystemPermission(Permission):
         def __get_perm_record(self, auth_name, is_group):
             SysPerm = config_db_model.SystemPermission
 
-            record = self.__session. \
+            return self.__session. \
                 query(SysPerm). \
                 filter(and_(
                     SysPerm.permission == self._perm_name,
                     func.lower(SysPerm.name) == auth_name.lower(),
                     SysPerm.is_group == is_group
                 )).one_or_none()
-
-            return record
 
         def __get_stored_auth_name_and_permissions(self, auth_name, is_group):
             """
@@ -334,10 +331,10 @@ class SystemPermission(Permission):
             if not permissions:  # This account have not got permission yet.
                 new_permission_record = config_db_model.SystemPermission(
                     self._permission.name, auth_name, is_group)
-            else:  # There are at least one permission of the user.
-                if self._permission.name in permissions:
-                    return False  # Required permission already granted
+            elif self._permission.name in permissions:
+                return False  # Required permission already granted
 
+            else:  # There are at least one permission of the user.
                 new_permission_record = config_db_model.SystemPermission(
                     self._permission.name, stored_auth_name, is_group)
 
@@ -367,8 +364,7 @@ class SystemPermission(Permission):
                     SysPerm.is_group == are_groups
                 ))
 
-            exists = self.__session.query(query.exists()).scalar()
-            return exists
+            return self.__session.query(query.exists()).scalar()
 
         def _list_authorised_impl(self):
             SysPerm = config_db_model.SystemPermission
@@ -421,7 +417,7 @@ class ProductPermission(Permission):
         def __get_perm_record(self, auth_name, is_group):
             ProdPerm = config_db_model.ProductPermission
 
-            record = self.__session. \
+            return self.__session. \
                 query(ProdPerm). \
                 filter(and_(
                     ProdPerm.permission == self._perm_name,
@@ -429,8 +425,6 @@ class ProductPermission(Permission):
                     func.lower(ProdPerm.name) == auth_name.lower(),
                     ProdPerm.is_group == is_group
                 )).one_or_none()
-
-            return record
 
         def __get_stored_auth_name_and_permissions(self, auth_name, is_group):
             """
@@ -468,10 +462,10 @@ class ProductPermission(Permission):
                 new_permission_record = config_db_model.ProductPermission(
                     self._permission.name, self.__product_id, auth_name,
                     is_group)
-            else:  # There are at least one permission of the user.
-                if self._permission.name in permission_set:
-                    return False  # Required permission already granted
+            elif self._permission.name in permission_set:
+                return False  # Required permission already granted
 
+            else:  # There are at least one permission of the user.
                 new_permission_record = config_db_model.ProductPermission(
                     self._permission.name, self.__product_id,
                     stored_auth_name, is_group)
@@ -504,8 +498,7 @@ class ProductPermission(Permission):
                     ProdPerm.is_group.is_(are_groups)
                 ))
 
-            exists = self.__session.query(query.exists()).scalar()
-            return exists
+            return self.__session.query(query.exists()).scalar()
 
         def _list_authorised_impl(self):
             ProdPerm = config_db_model.ProductPermission
@@ -578,13 +571,11 @@ def get_permissions(scope=None):
     if scope is not None and scope not in PERMISSION_SCOPES:
         return []
 
-    ret = []
-    for _, perm in sorted(__API_TO_PERM.items()):
-        if scope is not None and \
-                not isinstance(perm, PERMISSION_SCOPES[scope]):
-            continue
-        ret.append(perm)
-    return ret
+    return [
+        perm
+        for _, perm in sorted(__API_TO_PERM.items())
+        if scope is None or isinstance(perm, PERMISSION_SCOPES[scope])
+    ]
 
 
 def permission_from_api_enum(key):

@@ -96,8 +96,9 @@ def __convert_reports(reports: List[Report],
             f"[{report.checker_name}]\n{report.source_line}"
 
         # Skip the report if it is not in the changed files.
-        if changed_file_path and not \
-                any([file_name.endswith(c) for c in changed_files]):
+        if changed_file_path and not any(
+            file_name.endswith(c) for c in changed_files
+        ):
             report_messages_in_unchanged_files.append(review_comment_msg)
             continue
 
@@ -123,13 +124,12 @@ def __convert_reports(reports: List[Report],
     if report_url:
         message += " See: '{0}'".format(report_url)
 
-    review = {"tag": "jenkins",
+    return {"tag": "jenkins",
               "message": message,
               "labels": {
                   "Code-Review": -1 if report_count else 1,
                   "Verified": -1 if report_count else 1},
               "comments": review_comments}
-    return review
 
 
 def __get_changed_files(changed_file_path: Union[None, str]) -> List[str]:

@@ -70,14 +70,15 @@ def setup_package():
         'skip_list_file': skip_list_file,
         'check_env': test_env,
         'workspace': TEST_WORKSPACE,
-        'checkers': []
+        'reportdir': os.path.join(test_proj_path_base, 'reports'),
+        'checkers': [
+            '-e',
+            'core.CallAndMessage',
+            '-d',
+            'core.NullDereference',
+        ],
     }
 
-    # Base analysis
-    codechecker_cfg['reportdir'] = os.path.join(test_proj_path_base,
-                                                'reports')
-    codechecker_cfg['checkers'] = ['-e', 'core.CallAndMessage',
-                                   '-d', 'core.NullDereference']
 
     ret = codechecker.log_and_analyze(codechecker_cfg, test_proj_path_base)
     if ret:

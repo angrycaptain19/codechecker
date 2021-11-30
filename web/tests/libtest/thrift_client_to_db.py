@@ -138,11 +138,10 @@ class CCViewerHelper(ThriftAPIHelper):
 
     def __getattr__(self, attr):
         is_getAll = re.match(r'(get)All(.*)$', attr)
-        if is_getAll:
-            func_name = is_getAll.group(1) + is_getAll.group(2)
-            return partial(self._getAll_emu, func_name)
-        else:
+        if not is_getAll:
             return partial(self._thrift_client_call, attr)
+        func_name = is_getAll.group(1) + is_getAll.group(2)
+        return partial(self._getAll_emu, func_name)
 
     def _getAll_emu(self, func_name, *args):
         """

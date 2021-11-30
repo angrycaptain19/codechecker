@@ -44,11 +44,10 @@ def print_analyzer_statistic_summary(metadata_analyzers, status, msg=None):
     Print analyzer statistic summary for the given status code with the given
     section heading message.
     """
-    has_status = False
-    for _, analyzer in metadata_analyzers.items():
-        if analyzer.get('analyzer_statistics', {}).get(status):
-            has_status = True
-            break
+    has_status = any(
+        analyzer.get('analyzer_statistics', {}).get(status)
+        for _, analyzer in metadata_analyzers.items()
+    )
 
     if has_status and msg:
         LOG.info(msg)

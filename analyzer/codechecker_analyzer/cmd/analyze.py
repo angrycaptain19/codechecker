@@ -10,6 +10,7 @@ Execute analysis over an already existing build.json compilation database.
 """
 
 
+
 import argparse
 import collections
 import json
@@ -31,14 +32,8 @@ from codechecker_common import arg, logger, skiplist_handler, cmd_config
 
 LOG = logger.get_logger('system')
 
-epilog_env_var = f"""
-  CC_ANALYZERS_FROM_PATH   Set to `yes` or `1` to enforce taking the analyzers
-                           from the `PATH` instead of the given binaries.
-  CC_CLANGSA_PLUGIN_DIR    If the CC_ANALYZERS_FROM_PATH environment variable
-                           is set you can configure the plugin directory of the
-                           Clang Static Analyzer by using this environment
-                           variable.
-"""
+epilog_env_var = '\x1f  CC_ANALYZERS_FROM_PATH   Set to `yes` or `1` to enforce taking the analyzers\x1f                           from the `PATH` instead of the given binaries.\x1f  CC_CLANGSA_PLUGIN_DIR    If the CC_ANALYZERS_FROM_PATH environment variable\x1f                           is set you can configure the plugin directory of the\x1f                           Clang Static Analyzer by using this environment\x1f                           variable.\x1f'
+
 
 epilog_issue_hashes = """
 Issue hashes
@@ -1075,8 +1070,6 @@ def main(args):
         LOG.debug("Sending analyzer statistics finished.")
     except Exception:
         LOG.debug("Failed to send analyzer statistics!")
-        pass
-
     # Generally exit status is set by sys.exit() call in CodeChecker. However,
     # exit code 3 has a special meaning: it returns when the underlying
     # analyzer tool fails.

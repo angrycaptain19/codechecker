@@ -67,10 +67,10 @@ def filter_includes(include_dirs):
         """
         if not os.path.exists(include_dir):
             return False
-        for include_file in os.listdir(include_dir):
-            if include_file.endswith("intrin.h"):
-                return True
-        return False
+        return any(
+            include_file.endswith("intrin.h")
+            for include_file in os.listdir(include_dir)
+        )
 
     result = []
     for include_dir in include_dirs:
@@ -138,7 +138,7 @@ def create_compiler_info_json(old_info, filepath):
                    (c) default compiler standard (string).
         filepath : Path to 'compiler_info.json' file that should be created.
     """
-    info = dict()
+    info = {}
 
     for compiler in old_info:
         include_paths = process_includes(old_info[compiler]['includes'])
@@ -235,12 +235,9 @@ if __name__ == '__main__':
             target = json.loads(src.read())
 
         # Unify information from the two files.
-        old_info = dict()
-        for compiler in includes:
-            old_info[compiler] = {"includes": includes[compiler],
+        old_info = {compiler: {"includes": includes[compiler],
                                   "target": target[compiler],
-                                  "default_standard": ""}
-
+                                  "default_standard": ""} for compiler in includes}
         create_compiler_info_json(old_info, info_file)
 
         if args.clean:

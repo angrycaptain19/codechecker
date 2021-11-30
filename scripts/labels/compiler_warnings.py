@@ -39,11 +39,7 @@ def main():
 
         backref = section.find('.//*[@class="toc-backref"]')
         name = backref.text[2:].lower()  # Remove -W and convert to lower case.
-        if name:
-            checker_name = f"clang-diagnostic-{name}"
-        else:
-            checker_name = "clang-diagnostic"
-
+        checker_name = f"clang-diagnostic-{name}" if name else "clang-diagnostic"
         if checker_name not in labels:
             labels[checker_name] = []
 
@@ -54,11 +50,7 @@ def main():
         is_error = section.find('.//*[@class="error"]') is not None
         if not any(lbl.startswith("severity:")
                    for lbl in labels[checker_name]):
-            if is_error:
-                severity = "HIGH"
-            else:
-                severity = "MEDIUM"
-
+            severity = "HIGH" if is_error else "MEDIUM"
             labels[checker_name].append(f"severity:{severity}")
 
     labels_data["labels"] = dict(sorted(labels.items()))

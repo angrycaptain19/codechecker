@@ -117,14 +117,14 @@ class AnalyzeParseTestCase(
         In case of CodeChecker analyze and check commands the analysis is
         forced to one core.
         """
-        if cmd[1] != 'analyze' and cmd[1] != 'check':
+        if cmd[1] not in ['analyze', 'check']:
             return cmd
 
         new_cmd = []
 
         i = 0
         while i < len(cmd):
-            if cmd[i] == '-j' or cmd[i] == '--jobs':
+            if cmd[i] in ['-j', '--jobs']:
                 i += 2
             elif cmd[i].startswith('-j'):
                 i += 1
@@ -224,8 +224,7 @@ class AnalyzeParseTestCase(
                           r'(.+\:\d+\:\d+\:\s.*\s\[.*\])$'.format(sep),
                           r'\1\3', line)
 
-            if not any([line.startswith(prefix) for prefix
-                        in skip_prefixes]):
+            if not any(line.startswith(prefix) for prefix in skip_prefixes):
                 post_processed_output.append(line)
 
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Actual output below:")

@@ -165,11 +165,8 @@ def get_user_dn(con,
         # Attribute values MAY contain any type of data. Before you use a
         # value, call 'bytes_to_str' helper function to convert it to text.
         user_data = con.search_s(account_base_dn, scope, account_pattern)
-        user_dns = []
         if user_data:
-            # User found use the user DN from the first result.
-            for user_info in user_data:
-                user_dns.append(bytes_to_str(user_info[0]))
+            user_dns = [bytes_to_str(user_info[0]) for user_info in user_data]
             LOG.debug("Found user dns: %s", ', '.join(user_dns))
 
             if len(user_dns) > 1 and user_dn_postfix_preference:
@@ -234,11 +231,7 @@ class LDAPConnection:
         ldap.set_option(ldap.OPT_REFERRALS, 1 if referrals else 0)
 
         deref = ldap_config.get('deref', ldap.DEREF_ALWAYS)
-        if deref == 'never':
-            deref = ldap.DEREF_NEVER
-        else:
-            deref = ldap.DEREF_ALWAYS
-
+        deref = ldap.DEREF_NEVER if deref == 'never' else ldap.DEREF_ALWAYS
         ldap.set_option(ldap.OPT_DEREF, deref)
 
         ldap.protocol_version = ldap.VERSION3
@@ -252,7 +245,7 @@ class LDAPConnection:
 
         self.connection = ldap.initialize(ldap_server, bytes_mode=False)
 
-        LOG.debug('Binding to LDAP server with user: %s', who if who else '')
+        LOG.debug('Binding to LDAP server with user: %s', who or '')
 
         res = None
         with ldap_error_handler():

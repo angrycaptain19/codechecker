@@ -374,12 +374,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     request_endpoint is None:
                 raise Exception("Invalid request endpoint path.")
 
-            product = None
-            if product_endpoint:
-                # The current request came through a product route, and not
-                # to the main endpoint.
-                product = self.__check_prod_db(product_endpoint)
-
+            product = self.__check_prod_db(product_endpoint) if product_endpoint else None
             version_supported = routing.is_supported_version(api_ver)
             if version_supported:
                 major_version, _ = version_supported
@@ -629,7 +624,7 @@ class Product:
                 .filter(RunLock.locked_at.isnot(None)) \
                 .all()
 
-            runs_in_progress = set([run_lock[0] for run_lock in run_locks])
+            runs_in_progress = {run_lock[0] for run_lock in run_locks}
 
             num_of_runs = run_db_session.query(Run).count()
 

@@ -523,9 +523,7 @@ class PostgreSQLServer(SQLServer):
                                                          self.database,
                                                          self.user)
 
-        extra_args = {}
-        if driver == "psycopg2":
-            extra_args = {'client_encoding': 'utf8'}
+        extra_args = {'client_encoding': 'utf8'} if driver == "psycopg2" else {}
         return str(URL('postgresql+' + driver,
                        username=self.user,
                        password=password,
@@ -566,7 +564,7 @@ class PostgreSQLServer(SQLServer):
 
         # If the user has a password pre-specified, use that for the
         # 'psql' call!
-        env = self.run_env if self.run_env else os.environ
+        env = self.run_env or os.environ
         env = env.copy()
         if self.password:
             env['PGPASSWORD'] = self.password
@@ -577,9 +575,8 @@ class PostgreSQLServer(SQLServer):
             LOG.debug(err)
             return DBStatus.FAILED_TO_CONNECT
 
-        if init:
-            if not self._create_schema():
-                return DBStatus.SCHEMA_INIT_ERROR
+        if init and not self._create_schema():
+            return DBStatus.SCHEMA_INIT_ERROR
 
         return self.check_schema()
 
@@ -614,10 +611,9 @@ class SQLiteDatabase(SQLServer):
         event.listen(engine, 'connect', _set_sqlite_pragma)
 
     def connect(self, init=False):
-        if init:
-            if not self._create_schema():
-                LOG.error("Failed to create schema")
-                return DBStatus.SCHEMA_INIT_ERROR
+        if init and not self._create_schema():
+            LOG.error("Failed to create schema")
+            return DBStatus.SCHEMA_INIT_ERROR
 
         return self.check_schema()
 

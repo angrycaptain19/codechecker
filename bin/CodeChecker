@@ -92,7 +92,7 @@ def main(subcommand=None):
 
     def signal_term_handler(signum, frame):
         global proc_pid
-        if proc_pid and not sys.platform == "win32":
+        if proc_pid and sys.platform != "win32":
             os.kill(proc_pid, signal.SIGINT)
 
         _remove_tmp()

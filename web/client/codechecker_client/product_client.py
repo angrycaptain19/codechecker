@@ -50,9 +50,7 @@ def handle_list_products(args):
     products = client.getProducts(None, None)
 
     if args.output_format == 'json':
-        results = []
-        for product in products:
-            results.append({product.endpoint: product})
+        results = [{product.endpoint: product} for product in products]
         print(CmdLineOutputEncoder().encode(results))
     else:  # plaintext, csv
         header = ['Database status', 'Endpoint', 'Name', 'Description']
